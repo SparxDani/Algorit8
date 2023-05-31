@@ -5,28 +5,63 @@ using UnityEngine;
 public class NodeControl : MonoBehaviour
 {
     public List<NodeControl> ListAdjacentNodes;
-    // Start is called before the first frame update
+    public float energy = 5f;
+
     void Start()
     {
-        
+
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+
     }
-    public NodeControl SelectNextNode()
+
+    public NodeControl SelectNextNode(NodeControl previousNode)
     {
-        int nodeSelected = Random.Range(0, ListAdjacentNodes.Count);
-        return ListAdjacentNodes[nodeSelected];
+        List<NodeControl> validNodes = new List<NodeControl>();
+
+        foreach (NodeControl node in ListAdjacentNodes)
+        {
+            if (node != previousNode)
+            {
+                validNodes.Add(node);
+            }
+        }
+
+        if (validNodes.Count > 0)
+        {
+            int nodeSelected = Random.Range(0, validNodes.Count);
+            return validNodes[nodeSelected];
+        }
+
+        return null;
     }
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "Player")
         {
-            NodeControl selected = SelectNextNode();
-            other.GetComponent<Player>().ChangeMovePosition(selected.gameObject.transform.position);
+            Player player = other.GetComponent<Player>();
+            NodeControl previousNode = player.GetCurrentNode();
+            NodeControl selected = SelectNextNode(previousNode);
+
+            if (selected != null)
+            {
+                player.SetCurrentNode(this);
+                other.GetComponent<Player>().ChangeMovePosition(selected.gameObject.transform.position);
+                selected.DecreaseNodeEnergy(other.GetComponent<Player>().drainAmount);
+            }
+        }
+    }
+
+    public void DecreaseNodeEnergy(float amount)
+    {
+        energy -= amount;
+
+        if (energy <= 0)
+        {
+            
         }
     }
 }

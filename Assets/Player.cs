@@ -5,11 +5,12 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Vector2 vectorToMove;
-    public float speed = 5;
+    public float speed = 5f;
     public float energy = 5f;
     public float drainAmount = 1f;
     public float recoveryTime = 3f;
     private bool rest = false;
+    private NodeControl currentNode;
 
     void Start()
     {
@@ -49,5 +50,15 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(recoveryTime);
         energy = 5f;
         rest = false;
+    }
+
+    public void SetCurrentNode(NodeControl node)
+    {
+        currentNode = node;
+    }
+
+    public NodeControl GetCurrentNode()
+    {
+        return currentNode;
     }
 }
